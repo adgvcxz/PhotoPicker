@@ -44,10 +44,6 @@ import it.sephiroth.android.library.easing.Easing;
 
 public abstract class ImageCropViewBase extends ImageView {
 
-    private static final int MAX_BITMAP_WIDTH = 960;
-
-    private static final int MAX_BITMAP_HEIGHT = 960;
-
     public interface OnDrawableChangeListener {
         void onDrawableChanged(Drawable drawable);
     }
@@ -995,13 +991,13 @@ public abstract class ImageCropViewBase extends ImageView {
         return Bitmap.createBitmap(sourceBitmap, (int) x, (int) y, (int) actualCropWidth, (int) actualCropHeight);
     }
 
-    public Bitmap getCroppedImageMaxSize() {
+    public Bitmap getCroppedImageMaxSize(int maxWidth, int maxHeight) {
         Bitmap viewBitmap = getViewBitmap();
         Bitmap sourceBitmap = viewBitmap;
         int[] size = new int[]{viewBitmap.getWidth(), viewBitmap.getHeight()};
         float scale = getBaseScale() * getScale();
 
-        if (imageFilePath != null && (size[0] < MAX_BITMAP_WIDTH || size[1] < MAX_BITMAP_HEIGHT)) {
+        if (imageFilePath != null && (size[0] < maxWidth || size[1] < maxHeight)) {
             DisplayMetrics metrics = getResources().getDisplayMetrics();
             int imageWidth = (int) ((float) metrics.widthPixels / 1.5);
             int imageHeight = (int) ((float) metrics.heightPixels / 1.5);
@@ -1033,9 +1029,9 @@ public abstract class ImageCropViewBase extends ImageView {
             actualCropWidth = size[0] - x;
         }
 
-        if (actualCropWidth > MAX_BITMAP_WIDTH) {
+        if (actualCropWidth > maxWidth || actualCropHeight > maxHeight) {
             Matrix matrix = new Matrix();
-            matrix.postScale(MAX_BITMAP_WIDTH / actualCropWidth, MAX_BITMAP_WIDTH / actualCropWidth); //长和宽放大缩小的比例
+            matrix.postScale(maxWidth / actualCropWidth, maxHeight / actualCropWidth); //长和宽放大缩小的比例
             return Bitmap.createBitmap(sourceBitmap, (int) x, (int) y, (int) actualCropWidth, (int) actualCropHeight, matrix, true);
         }
 

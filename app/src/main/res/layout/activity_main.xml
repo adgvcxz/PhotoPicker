@@ -19,16 +19,42 @@
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
-        <Button
-            android:id="@+id/ac_main_camera"
-            android:layout_width="wrap_content"
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Camera" />
-        <Button
-            android:id="@+id/ac_main_gallery"
-            android:layout_width="wrap_content"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/ac_main_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Camera" />
+
+            <Button
+                android:id="@+id/ac_main_camera_crop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Camera(Crop)" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Gallery"/>
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/ac_main_gallery"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gallery" />
+
+            <Button
+                android:id="@+id/ac_main_gallery_crop"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Gallery(Crop)" />
+        </LinearLayout>
 
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>
