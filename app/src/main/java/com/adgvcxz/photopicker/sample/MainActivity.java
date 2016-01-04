@@ -19,6 +19,9 @@ import java.io.File;
 
 public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnPickPhotoListener {
 
+
+    private static final int CAMERA_REQUEST = 1;
+
     private PhotoPicker mPhotoPicker;
 
     private File mDir;
@@ -38,11 +41,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.ac_main_camera_crop).setOnClickListener(this);
         findViewById(R.id.ac_main_gallery).setOnClickListener(this);
         findViewById(R.id.ac_main_gallery_crop).setOnClickListener(this);
-        mPhotoPicker = new PhotoPicker.Builder()
-                .setCameraCode(1)
-                .setCameraFile(new File(mDir.getAbsolutePath() + "/abcd.jpg"))
-                .setOnPickPhotoListener(this)
-                .create();
     }
 
 
@@ -55,12 +53,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.ac_main_gallery:
-                mPhotoPicker.goToGallery(this);
+                mPhotoPicker = new PhotoPicker.Builder()
+                        .galleryCode(1)
+                        .setOnPickPhotoListener(this)
+                        .goToCamera(this);
                 break;
             case R.id.ac_main_camera:
-                mPhotoPicker.goToCamera(this);
+                mPhotoPicker = new PhotoPicker.Builder()
+                        .cameraCode(CAMERA_REQUEST)
+                        .cameraFile(new File(mDir.getAbsolutePath() + "/abcd.jpg"))
+                        .setOnPickPhotoListener(this)
+                        .goToGallery(this);
                 break;
             case R.id.ac_main_camera_crop:
+                mPhotoPicker = new PhotoPicker.Builder()
+                        .galleryCode(CAMERA_REQUEST)
+                        .crop()
+                        .cameraFile(new File(mDir.getAbsolutePath() + "/abcd.jpg"))
+                        .cropFile(new File(mDir.getAbsolutePath() + "/abcde.jpg"))
+                        .setOnPickPhotoListener(this)
+                        .goToCamera(this);
                 break;
             case R.id.ac_main_gallery_crop:
                 break;

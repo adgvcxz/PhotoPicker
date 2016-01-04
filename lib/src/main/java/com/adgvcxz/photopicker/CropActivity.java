@@ -10,6 +10,7 @@ import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.adgvcxz.photopicker.util.Util;
 import com.adgvcxz.photopicker.views.ImageCropView;
 
 import java.io.File;
@@ -21,6 +22,8 @@ import java.io.IOException;
  * Created by zhaowei on 15/12/30.
  */
 public class CropActivity extends AppCompatActivity {
+
+    private static final int ORIGIN_SIZE = 0;
 
     public static final String CROP_FILE_PATH = "CROP_FILE_PATH";
     public static final String CROP_MAX_WIDTH = "MAX_WIDTH";
@@ -41,22 +44,27 @@ public class CropActivity extends AppCompatActivity {
         Intent intent = getIntent();
         String path = intent.getStringExtra(CROP_FILE_PATH);
         Uri uri = intent.getData();
-        mMaxHeight = intent.getIntExtra(CROP_MAX_HEIGHT, 0);
-        mMaxWidth = intent.getIntExtra(CROP_MAX_WIDTH, 0);
+        mMaxHeight = intent.getIntExtra(CROP_MAX_HEIGHT, ORIGIN_SIZE);
+        mMaxWidth = intent.getIntExtra(CROP_MAX_WIDTH, ORIGIN_SIZE);
         mQuality = intent.getIntExtra(CROP_QUALITY, 100);
         if (TextUtils.isEmpty(path) || mQuality <= 0 || mQuality > 100) {
             finish();
         }
         mCropFile = new File(path);
         mImageCropView.setImageFilePath(uri.getPath());
-        mImageCropView.setAspectRatio(1, 1);
+        if (mMaxHeight == ORIGIN_SIZE && mMaxWidth == ORIGIN_SIZE) {
+            int[] size = Util.getImageSize(uri.getPath());
+            mImageCropView.setAspectRatio(size[0], size[1]);
+        } else {
+            mImageCropView.setAspectRatio(mMaxWidth, mMaxHeight);
+        }
     }
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.crop_image) {
             Bitmap bitmap;
-            if (mMaxWidth > 0 && mMaxHeight > 0) {
+            if (mMaxWidth > ORIGIN_SIZE && mMaxHeight > ORIGIN_SIZE) {
                 bitmap = mImageCropView.getCroppedImageMaxSize(mMaxWidth, mMaxHeight);
             } else {
                 bitmap = mImageCropView.getCroppedImage();

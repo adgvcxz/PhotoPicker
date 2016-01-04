@@ -5,6 +5,7 @@ import android.content.ContentUris;
 import android.content.Context;
 import android.content.CursorLoader;
 import android.database.Cursor;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
@@ -16,6 +17,13 @@ import android.provider.MediaStore;
  * Created by zhaowei on 15/12/29.
  */
 public class Util {
+
+    public static int[] getImageSize(String path) {
+        BitmapFactory.Options options = new BitmapFactory.Options();
+        options.inJustDecodeBounds = true;
+        BitmapFactory.decodeFile(path, options);
+        return new int[]{options.outWidth, options.outHeight};
+    }
 
     public static String getPath(Context context, Uri uri) {
         String path;
