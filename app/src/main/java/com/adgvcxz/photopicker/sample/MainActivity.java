@@ -69,6 +69,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mPhotoPicker = new PhotoPicker.Builder()
                         .galleryCode(CAMERA_REQUEST)
                         .crop()
+                        .cropMaxSize(512, 512)
                         .cameraFile(new File(mDir.getAbsolutePath() + "/abcd.jpg"))
                         .cropFile(new File(mDir.getAbsolutePath() + "/abcde.jpg"))
                         .setOnPickPhotoListener(this)

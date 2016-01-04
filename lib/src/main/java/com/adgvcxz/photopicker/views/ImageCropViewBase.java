@@ -847,7 +847,7 @@ public abstract class ImageCropViewBase extends ImageView {
         adjustCropAreaImage();
     }
 
-    private void adjustCropAreaImage() {
+    protected void adjustCropAreaImage() {
         final Drawable drawable = getDrawable();
         if (drawable == null) return;
 

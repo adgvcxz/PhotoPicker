@@ -61,7 +61,7 @@ public class PhotoPicker {
                     }
                 }
             } else if (requestCode == mCropRequestCode) {
-
+                mOnPickPhotoListener.onPickPhoto(mCropFile);
             }
         }
     }

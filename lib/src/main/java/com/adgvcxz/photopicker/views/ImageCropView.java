@@ -189,6 +189,7 @@ public class ImageCropView extends ImageCropViewBase {
 		if (getScale() < getMinScale()) {
 			zoomTo(getMinScale(), 50);
 		}
+		adjustCropAreaImage();
 		return true;
 	}
 
@@ -218,13 +219,9 @@ public class ImageCropView extends ImageCropViewBase {
 				mUserScaled = true;
 				float scale = getScale();
 				float targetScale = scale;
-                Log.d(LOG_TAG,"targetScale : " + targetScale);
 				targetScale = onDoubleTapPost(scale, getMaxScale());
-                Log.d(LOG_TAG,"targetScale : " + targetScale);
 				targetScale = Math.min(getMaxScale(), Math.max(targetScale, getMinScale()));
-                Log.d(LOG_TAG,"targetScale : " + targetScale);
 				zoomTo(targetScale, e.getX(), e.getY(), DEFAULT_ANIMATION_DURATION);
-                Log.d(LOG_TAG,"targetScale : " + targetScale);
 				invalidate();
 			}
 
@@ -295,7 +292,7 @@ public class ImageCropView extends ImageCropViewBase {
 			if (mScaleEnabled) {
 				if (mScaled && span != 0) {
 					mUserScaled = true;
-					targetScale = Math.min(getMaxScale(), Math.max(targetScale, getMinScale() - 0.1f));
+					targetScale = Math.min(getMaxScale(), Math.max(targetScale, getMinScale()));
 					zoomTo(targetScale, detector.getFocusX(), detector.getFocusY());
 					mDoubleTapDirection = 1;
 					invalidate();

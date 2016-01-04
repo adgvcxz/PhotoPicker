@@ -6,6 +6,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -41,6 +42,7 @@ public class CropActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.ac_crop);
         mImageCropView = (ImageCropView) findViewById(R.id.ac_crop_image);
+        setSupportActionBar((Toolbar) findViewById(R.id.ac_crop_toolbar));
         Intent intent = getIntent();
         String path = intent.getStringExtra(CROP_FILE_PATH);
         Uri uri = intent.getData();
