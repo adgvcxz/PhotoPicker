@@ -76,6 +76,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .goToCamera(this);
                 break;
             case R.id.ac_main_gallery_crop:
+                mPhotoPicker = new PhotoPicker.Builder()
+                        .galleryCode(CAMERA_REQUEST)
+                        .crop()
+                        .systemCrop()
+                        .cropFile(new File(mDir.getAbsolutePath() + "/abcde.jpg"))
+                        .setOnPickPhotoListener(this)
+                        .goToGallery(this);
                 break;
         }
     }

@@ -30,6 +30,7 @@ public class PhotoPicker {
     private int mMaxHeight;
     private File mCropFile;
     private Activity mActivity;
+    private boolean mSystemCrop;
 
     public PhotoPicker() {
         mCameraRequestCode = DEFAULT_CAMERA;
@@ -41,13 +42,7 @@ public class PhotoPicker {
         if (mOnPickPhotoListener != null && resultCode == Activity.RESULT_OK) {
             if (requestCode == mCameraRequestCode) {
                 if (mCrop) {
-                    Intent intent = new Intent(mActivity, CropActivity.class);
-                    intent.setData(Uri.fromFile(mPhotoFile));
-                    intent.putExtra(CropActivity.CROP_MAX_HEIGHT, mMaxHeight);
-                    intent.putExtra(CropActivity.CROP_MAX_WIDTH, mMaxWidth);
-                    intent.putExtra(CropActivity.CROP_FILE_PATH, mCropFile.getAbsolutePath());
-                    intent.putExtra(CropActivity.CROP_QUALITY, 100);
-                    mActivity.startActivityForResult(intent, DEFAULT_CROP);
+                    goToCrop();
                 } else {
                     mOnPickPhotoListener.onPickPhoto(mPhotoFile);
                 }
@@ -56,6 +51,8 @@ public class PhotoPicker {
                     Uri uri = data.getData();
                     String path = Util.getPath(mActivity, uri);
                     if (mCrop) {
+                        mPhotoFile = new File(path);
+                        goToCrop();
                     } else {
                         mOnPickPhotoListener.onPickPhoto(new File(path));
                     }
@@ -63,6 +60,38 @@ public class PhotoPicker {
             } else if (requestCode == mCropRequestCode) {
                 mOnPickPhotoListener.onPickPhoto(mCropFile);
             }
+        }
+    }
+
+    private void goToCrop() {
+        if (!mSystemCrop) {
+            Intent intent = new Intent(mActivity, CropActivity.class);
+            intent.setData(Uri.fromFile(mPhotoFile));
+            intent.putExtra(CropActivity.CROP_MAX_HEIGHT, mMaxHeight);
+            intent.putExtra(CropActivity.CROP_MAX_WIDTH, mMaxWidth);
+            intent.putExtra(CropActivity.CROP_FILE_PATH, mCropFile.getAbsolutePath());
+            intent.putExtra(CropActivity.CROP_QUALITY, 100);
+            mActivity.startActivityForResult(intent, mCropRequestCode);
+        } else {
+            Intent intent = new Intent();
+            intent.setAction("com.android.camera.action.CROP");
+            intent.setDataAndType(Uri.fromFile(mPhotoFile), "image/*");
+            intent.putExtra("crop", "true");
+            if (mMaxWidth > 0 && mMaxHeight > 0) {
+                intent.putExtra("aspectX", mMaxWidth);
+                intent.putExtra("aspectY", mMaxHeight);
+                intent.putExtra("outputX", mMaxWidth);
+                intent.putExtra("outputY", mMaxHeight);
+            } else {
+                int[] size = Util.getImageSize(mPhotoFile.getAbsolutePath());
+                intent.putExtra("aspectX", size[0]);
+                intent.putExtra("aspectY", size[1]);
+            }
+            intent.putExtra("scale", true);
+            intent.putExtra("noFaceDetection", true);
+            intent.putExtra("return-data", false);
+            intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mCropFile));
+            mActivity.startActivityForResult(intent, mCropRequestCode);
         }
     }
 
@@ -115,6 +144,11 @@ public class PhotoPicker {
             return this;
         }
 
+        public Builder systemCrop() {
+            photoPicker.mSystemCrop = true;
+            return this;
+        }
+
         public PhotoPicker goToCamera(Activity activity) {
             if (photoPicker.mPhotoFile != null || (photoPicker.mCrop && photoPicker.mCropFile != null
                     && !TextUtils.isEmpty(photoPicker.mCropFile.getAbsolutePath()))) {
@@ -129,6 +163,7 @@ public class PhotoPicker {
         }
 
         public PhotoPicker goToGallery(Activity activity) {
+            photoPicker.mActivity = activity;
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             activity.startActivityForResult(intent, photoPicker.mGalleryRequestCode);
