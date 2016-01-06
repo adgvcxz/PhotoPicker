@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         findViewById(R.id.ac_main_camera_crop).setOnClickListener(this);
         findViewById(R.id.ac_main_gallery).setOnClickListener(this);
         findViewById(R.id.ac_main_gallery_crop).setOnClickListener(this);
+        findViewById(R.id.ic_main_wechat_gallery).setOnClickListener(this);
     }
 
 
@@ -79,10 +80,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 mPhotoPicker = new PhotoPicker.Builder()
                         .galleryCode(CAMERA_REQUEST)
                         .crop()
-                        .systemCrop()
                         .cropFile(new File(mDir.getAbsolutePath() + "/abcde.jpg"))
                         .setOnPickPhotoListener(this)
                         .goToGallery(this);
+                break;
+            case R.id.ic_main_wechat_gallery:
+                mPhotoPicker = new PhotoPicker.Builder()
+                        .setOnPickPhotoListener(this)
+                        .goToMultiPhotoGallery(this);
                 break;
         }
     }

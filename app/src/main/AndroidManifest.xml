@@ -21,6 +21,9 @@
         <activity
             android:name="com.adgvcxz.photopicker.CropActivity"
             android:screenOrientation="portrait" />
+        <activity
+            android:name="com.adgvcxz.photopicker.PhotoPickerActivity"
+            android:screenOrientation="portrait" />
     </application>
 
 </manifest>

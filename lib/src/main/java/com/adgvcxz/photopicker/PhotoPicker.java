@@ -19,10 +19,12 @@ public class PhotoPicker {
     public static final int DEFAULT_CAMERA = 10001;
     public static final int DEFAULT_GALLERY = 10002;
     public static final int DEFAULT_CROP = 10003;
+    public static final int DEFAULT_MULTI = 10004;
 
     private int mCameraRequestCode;
     private int mGalleryRequestCode;
     private int mCropRequestCode;
+    private int mMultiRequestCode;
     private File mPhotoFile;
     private OnPickPhotoListener mOnPickPhotoListener;
     private boolean mCrop;
@@ -31,11 +33,13 @@ public class PhotoPicker {
     private File mCropFile;
     private Activity mActivity;
     private boolean mSystemCrop;
+    private boolean mMultiPhoto;
 
     public PhotoPicker() {
         mCameraRequestCode = DEFAULT_CAMERA;
         mGalleryRequestCode = DEFAULT_GALLERY;
         mCropRequestCode = DEFAULT_CROP;
+        mMultiRequestCode = DEFAULT_MULTI;
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -59,6 +63,8 @@ public class PhotoPicker {
                 }
             } else if (requestCode == mCropRequestCode) {
                 mOnPickPhotoListener.onPickPhoto(mCropFile);
+            } else if (requestCode == mMultiRequestCode) {
+
             }
         }
     }
@@ -149,6 +155,11 @@ public class PhotoPicker {
             return this;
         }
 
+        public Builder multiPhoto() {
+            photoPicker.mMultiPhoto = true;
+            return this;
+        }
+
         public PhotoPicker goToCamera(Activity activity) {
             if (photoPicker.mPhotoFile != null || (photoPicker.mCrop && photoPicker.mCropFile != null
                     && !TextUtils.isEmpty(photoPicker.mCropFile.getAbsolutePath()))) {
@@ -167,6 +178,13 @@ public class PhotoPicker {
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             activity.startActivityForResult(intent, photoPicker.mGalleryRequestCode);
+            return photoPicker;
+        }
+
+        public PhotoPicker goToMultiPhotoGallery(Activity activity) {
+            photoPicker.mActivity = activity;
+            Intent intent = new Intent(activity, PhotoPickerActivity.class);
+            activity.startActivityForResult(intent, photoPicker.mMultiRequestCode);
             return photoPicker;
         }
     }
