@@ -10,6 +10,7 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.ViewGroup;
 
+import com.adgvcxz.photopicker.views.PhotoPickerAdapter;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.drawee.backends.pipeline.PipelineDraweeController;
 import com.facebook.drawee.view.SimpleDraweeView;
@@ -31,20 +32,21 @@ public class PhotoPickerActivity extends AppCompatActivity {
 
     private ArrayList<String> mPaths;
     private RecyclerView mPhotoRecyclerView;
+    private PhotoPickerAdapter mPhotoPickerAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        ImagePipelineConfig config = ImagePipelineConfig.newBuilder(this)
-                .setDownsampleEnabled(true).build();
-        Fresco.initialize(this, config);
         setContentView(R.layout.ac_photo_picker);
         setSupportActionBar((Toolbar) findViewById(R.id.ac_photo_picker_toolbar));
         mPhotoRecyclerView = (RecyclerView) findViewById(R.id.ac_photo_picker_recycler_view);
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mPaths = new ArrayList<>();
+        mPhotoPickerAdapter = new PhotoPickerAdapter(this);
         loadPhotos();
-        mPhotoRecyclerView.setAdapter(new PhotoAdapter());
+        mPhotoRecyclerView.setAdapter(mPhotoPickerAdapter);
+        mPhotoPickerAdapter.setPaths(mPaths);
+
     }
 
     private void loadPhotos() {
@@ -56,33 +58,6 @@ public class PhotoPickerActivity extends AppCompatActivity {
                 mPaths.add(cursor.getString(0));
             }
             cursor.close();
-        }
-    }
-
-    class PhotoAdapter extends RecyclerView.Adapter {
-
-        @Override
-        public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            return new RecyclerView.ViewHolder(LayoutInflater.from(PhotoPickerActivity.this).inflate(R.layout.item_photo, null)) {
-            };
-        }
-
-        @Override
-        public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-            SimpleDraweeView view = (SimpleDraweeView) holder.itemView.findViewById(R.id.item_photo_image);
-            ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.fromFile(new File(mPaths.get(position))))
-                    .setResizeOptions(new ResizeOptions(200, 200))
-                    .build();
-            PipelineDraweeController controller = (PipelineDraweeController) Fresco.newDraweeControllerBuilder()
-                    .setOldController(view.getController())
-                    .setImageRequest(request)
-                    .build();
-            view.setController(controller);
-        }
-
-        @Override
-        public int getItemCount() {
-            return mPaths.size();
         }
     }
 }

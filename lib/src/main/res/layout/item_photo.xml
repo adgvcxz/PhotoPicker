@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.adgvcxz.photopicker.views.SquareLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:padding="1dp">
@@ -7,5 +8,23 @@
     <com.facebook.drawee.view.SimpleDraweeView
         android:id="@+id/item_photo_image"
         android:layout_width="match_parent"
-        android:layout_height="match_parent" />
+        android:layout_height="match_parent"
+        app:actualImageScaleType="focusCrop"
+        app:placeholderImage="@mipmap/photo_default"
+        app:placeholderImageScaleType="focusCrop" />
+
+    <com.adgvcxz.photopicker.views.InterceptLayout
+        android:id="@+id/item_photo_check_layout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:background="?attr/selectableItemBackground"
+        android:padding="2dp">
+
+        <android.support.v7.widget.AppCompatCheckBox
+            android:id="@+id/item_photo_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+    </com.adgvcxz.photopicker.views.InterceptLayout>
 </com.adgvcxz.photopicker.views.SquareLayout>
