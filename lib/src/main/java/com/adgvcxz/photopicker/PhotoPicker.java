@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.adgvcxz.photopicker.util.Util;
 
 import java.io.File;
+import java.util.ArrayList;
 
 /**
  * zhaowei
@@ -27,6 +29,7 @@ public class PhotoPicker {
     private int mMultiRequestCode;
     private File mPhotoFile;
     private OnPickPhotoListener mOnPickPhotoListener;
+    private OnPickMultiPhotoListener mOnPickMultiPhotoListener;
     private boolean mCrop;
     private int mMaxWidth;
     private int mMaxHeight;
@@ -43,12 +46,14 @@ public class PhotoPicker {
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (mOnPickPhotoListener != null && resultCode == Activity.RESULT_OK) {
+        if (resultCode == Activity.RESULT_OK) {
             if (requestCode == mCameraRequestCode) {
                 if (mCrop) {
                     goToCrop();
                 } else {
-                    mOnPickPhotoListener.onPickPhoto(mPhotoFile);
+                    if (mOnPickMultiPhotoListener != null) {
+                        mOnPickPhotoListener.onPickPhoto(mPhotoFile);
+                    }
                 }
             } else if (requestCode == mGalleryRequestCode) {
                 if (data != null) {
@@ -58,13 +63,24 @@ public class PhotoPicker {
                         mPhotoFile = new File(path);
                         goToCrop();
                     } else {
-                        mOnPickPhotoListener.onPickPhoto(new File(path));
+                        if (mOnPickMultiPhotoListener != null) {
+                            mOnPickPhotoListener.onPickPhoto(new File(path));
+                        }
                     }
                 }
             } else if (requestCode == mCropRequestCode) {
-                mOnPickPhotoListener.onPickPhoto(mCropFile);
+                if (mOnPickMultiPhotoListener != null) {
+                    mOnPickPhotoListener.onPickPhoto(mCropFile);
+                }
             } else if (requestCode == mMultiRequestCode) {
-
+                if (mOnPickMultiPhotoListener != null) {
+                    ArrayList<File> files = new ArrayList<>();
+                    ArrayList<String> paths = data.getStringArrayListExtra(PhotoPickerActivity.PATHS);
+                    for (String s : paths) {
+                        files.add(new File(s));
+                    }
+                    mOnPickMultiPhotoListener.onPickPhotos(files);
+                }
             }
         }
     }
@@ -145,11 +161,6 @@ public class PhotoPicker {
             return this;
         }
 
-        public Builder setOnPickPhotoListener(OnPickPhotoListener listener) {
-            photoPicker.mOnPickPhotoListener = listener;
-            return this;
-        }
-
         public Builder systemCrop() {
             photoPicker.mSystemCrop = true;
             return this;
@@ -160,9 +171,10 @@ public class PhotoPicker {
             return this;
         }
 
-        public PhotoPicker goToCamera(Activity activity) {
+        public PhotoPicker goToCamera(Activity activity, OnPickPhotoListener listener) {
             if (photoPicker.mPhotoFile != null || (photoPicker.mCrop && photoPicker.mCropFile != null
                     && !TextUtils.isEmpty(photoPicker.mCropFile.getAbsolutePath()))) {
+                photoPicker.mOnPickPhotoListener = listener;
                 photoPicker.mActivity = activity;
                 Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
                 intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(photoPicker.mPhotoFile));
@@ -173,17 +185,20 @@ public class PhotoPicker {
             return null;
         }
 
-        public PhotoPicker goToGallery(Activity activity) {
+        public PhotoPicker goToGallery(Activity activity, OnPickPhotoListener listener) {
             photoPicker.mActivity = activity;
+            photoPicker.mOnPickPhotoListener = listener;
             Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
             intent.setType("image/*");
             activity.startActivityForResult(intent, photoPicker.mGalleryRequestCode);
             return photoPicker;
         }
 
-        public PhotoPicker goToMultiPhotoGallery(Activity activity) {
+        public PhotoPicker goToMultiPhotoGallery(Activity activity, OnPickMultiPhotoListener listener) {
             photoPicker.mActivity = activity;
+            photoPicker.mOnPickMultiPhotoListener = listener;
             Intent intent = new Intent(activity, PhotoPickerActivity.class);
+            intent.putExtra(PhotoPickerActivity.MAX, photoPicker.mMaxPhoto);
             activity.startActivityForResult(intent, photoPicker.mMultiRequestCode);
             return photoPicker;
         }

@@ -31,6 +31,7 @@ public class PhotoPickerAdapter extends RecyclerView.Adapter {
     private LayoutInflater mInflater;
     private ArrayList<String> mPaths;
     private ArrayList<String> mSelected;
+    private OnSelectPhotoListener mOnSelectPhotoListener;
 
     public PhotoPickerAdapter(Context context, int max) {
         mInflater = LayoutInflater.from(context);
@@ -42,6 +43,10 @@ public class PhotoPickerAdapter extends RecyclerView.Adapter {
     public void setPaths(ArrayList<String> paths) {
         mPaths = paths;
         notifyDataSetChanged();
+    }
+
+    public void setOnSelectPhotoListener(OnSelectPhotoListener listener) {
+        mOnSelectPhotoListener = listener;
     }
 
     @Override
@@ -58,6 +63,10 @@ public class PhotoPickerAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemCount() {
         return mPaths.size();
+    }
+
+    public ArrayList<String> getSelected() {
+        return mSelected;
     }
 
     public class PhotoHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
@@ -94,14 +103,23 @@ public class PhotoPickerAdapter extends RecyclerView.Adapter {
         public void onClick(View v) {
             int id = v.getId();
             if (id == R.id.item_photo_check_layout) {
-                checkBox.setChecked(!checkBox.isChecked());
-                if (checkBox.isChecked()) {
-                    mSelected.add(path);
-                } else {
-                    mSelected.remove(path);
+                boolean checked = checkBox.isChecked();
+                if (mMax <= 0 || mSelected.size() < mMax || checked) {
+                    checkBox.setChecked(!checked);
+                    if (!checked) {
+                        mSelected.add(path);
+                    } else {
+                        mSelected.remove(path);
+                    }
                 }
-                notifyItemChanged(position);
+                if (mOnSelectPhotoListener != null) {
+                    mOnSelectPhotoListener.onPickNumber(mSelected.size(), mMax);
+                }
             }
         }
+    }
+
+    public interface OnSelectPhotoListener {
+        void onPickNumber(int number, int max);
     }
 }
