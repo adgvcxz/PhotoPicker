@@ -40,7 +40,7 @@ public class CropActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.ac_crop);
+        setContentView(R.layout.picker_ac_crop);
         mImageCropView = (ImageCropView) findViewById(R.id.ac_crop_image);
         setSupportActionBar((Toolbar) findViewById(R.id.ac_crop_toolbar));
         Intent intent = getIntent();
@@ -78,7 +78,7 @@ public class CropActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.crop, menu);
+        getMenuInflater().inflate(R.menu.picker_crop, menu);
         return super.onCreateOptionsMenu(menu);
     }
 

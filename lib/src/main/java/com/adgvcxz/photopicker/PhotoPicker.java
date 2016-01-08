@@ -33,7 +33,7 @@ public class PhotoPicker {
     private File mCropFile;
     private Activity mActivity;
     private boolean mSystemCrop;
-    private boolean mMultiPhoto;
+    private int mMaxPhoto;
 
     public PhotoPicker() {
         mCameraRequestCode = DEFAULT_CAMERA;
@@ -155,8 +155,8 @@ public class PhotoPicker {
             return this;
         }
 
-        public Builder multiPhoto() {
-            photoPicker.mMultiPhoto = true;
+        public Builder multiPhoto(int max) {
+            photoPicker.mMaxPhoto = max;
             return this;
         }
 

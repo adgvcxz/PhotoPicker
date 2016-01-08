@@ -27,14 +27,16 @@ public class PhotoPickerAdapter extends RecyclerView.Adapter {
 
     private static final int SHOW_WIDTH = 192;
     private static final int SHOW_HEIGHT = 192;
+    private int mMax;
     private LayoutInflater mInflater;
     private ArrayList<String> mPaths;
     private ArrayList<String> mSelected;
 
-    public PhotoPickerAdapter(Context context) {
+    public PhotoPickerAdapter(Context context, int max) {
         mInflater = LayoutInflater.from(context);
         mPaths = new ArrayList<>();
         mSelected = new ArrayList<>();
+        mMax = max;
     }
 
     public void setPaths(ArrayList<String> paths) {
@@ -44,7 +46,7 @@ public class PhotoPickerAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PhotoHolder(mInflater.inflate(R.layout.item_photo, null));
+        return new PhotoHolder(mInflater.inflate(R.layout.picker_item_photo, null));
     }
 
     @Override
