@@ -1,25 +1,25 @@
 package com.adgvcxz.photopicker.sample;
 
 import android.content.Intent;
-import android.database.Cursor;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 
+import com.adgvcxz.photopicker.OnPickMultiPhotoListener;
 import com.adgvcxz.photopicker.OnPickPhotoListener;
 import com.adgvcxz.photopicker.PhotoPicker;
 import com.facebook.drawee.backends.pipeline.Fresco;
 import com.facebook.imagepipeline.core.ImagePipelineConfig;
 
 import java.io.File;
+import java.util.ArrayList;
 
 
-public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnPickPhotoListener {
+public class MainActivity extends AppCompatActivity implements View.OnClickListener, OnPickPhotoListener, OnPickMultiPhotoListener {
 
 
     private static final int CAMERA_REQUEST = 1;
@@ -61,15 +61,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.ac_main_gallery:
                 mPhotoPicker = new PhotoPicker.Builder()
                         .galleryCode(1)
-                        .setOnPickPhotoListener(this)
-                        .goToCamera(this);
+                        .goToCamera(this, this);
                 break;
             case R.id.ac_main_camera:
                 mPhotoPicker = new PhotoPicker.Builder()
                         .cameraCode(CAMERA_REQUEST)
                         .cameraFile(new File(mDir.getAbsolutePath() + "/abcd.jpg"))
-                        .setOnPickPhotoListener(this)
-                        .goToGallery(this);
+                        .goToGallery(this, this);
                 break;
             case R.id.ac_main_camera_crop:
                 mPhotoPicker = new PhotoPicker.Builder()
@@ -78,21 +76,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                         .cropMaxSize(512, 512)
                         .cameraFile(new File(mDir.getAbsolutePath() + "/abcd.jpg"))
                         .cropFile(new File(mDir.getAbsolutePath() + "/abcde.jpg"))
-                        .setOnPickPhotoListener(this)
-                        .goToCamera(this);
+                        .goToCamera(this, this);
                 break;
             case R.id.ac_main_gallery_crop:
                 mPhotoPicker = new PhotoPicker.Builder()
                         .galleryCode(CAMERA_REQUEST)
                         .crop()
                         .cropFile(new File(mDir.getAbsolutePath() + "/abcde.jpg"))
-                        .setOnPickPhotoListener(this)
-                        .goToGallery(this);
+                        .goToGallery(this, this);
                 break;
             case R.id.ic_main_wechat_gallery:
                 mPhotoPicker = new PhotoPicker.Builder()
-                        .setOnPickPhotoListener(this)
-                        .goToMultiPhotoGallery(this);
+                        .multiPhoto(5)
+                        .goToMultiPhotoGallery(this, this);
                 break;
         }
     }
@@ -101,5 +97,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onPickPhoto(File file) {
         Snackbar.make(findViewById(R.id.ac_main_layout), file.getAbsolutePath(), Snackbar.LENGTH_LONG)
                 .setAction("ok", this).show();
+    }
+
+    @Override
+    public void onPickPhotos(ArrayList<File> files) {
     }
 }

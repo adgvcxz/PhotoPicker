@@ -1,5 +1,7 @@
 <resources>
     <string name="app_name">PhotoPicker</string>
-    <string name="crop">Crop</string>
-    <string name="done">Done</string>
+    <string name="picker_crop">Crop</string>
+    <string name="picker_done">Done</string>
+    <string name="picker_menu_done_max">Done(%1$s/%2$s)</string>
+    <string name="picker_menu_done">Done(%1$s)</string>
 </resources>
