@@ -62,10 +62,21 @@
             android:orientation="horizontal">
 
             <Button
-                android:id="@+id/ic_main_wechat_gallery"
+                android:id="@+id/ac_main_wechat_gallery"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Wechat Gallery" />
+            <Button
+                android:id="@+id/ac_main_wechat_gallery_camera"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Wechat Gallery(Camera)" />
         </LinearLayout>
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/ac_main_recycler_view"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp" />
     </LinearLayout>
 </android.support.design.widget.CoordinatorLayout>

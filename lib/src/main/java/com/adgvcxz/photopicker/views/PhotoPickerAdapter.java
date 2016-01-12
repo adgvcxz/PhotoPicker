@@ -25,19 +25,24 @@ import java.util.ArrayList;
  */
 public class PhotoPickerAdapter extends RecyclerView.Adapter {
 
+    private static final int ITEM_CAMERA = 0;
+    private static final int ITEM_PHOTO = 1;
+
     private static final int SHOW_WIDTH = 192;
     private static final int SHOW_HEIGHT = 192;
     private int mMax;
+    private boolean mCamera;
     private LayoutInflater mInflater;
     private ArrayList<String> mPaths;
     private ArrayList<String> mSelected;
     private OnSelectPhotoListener mOnSelectPhotoListener;
 
-    public PhotoPickerAdapter(Context context, int max) {
+    public PhotoPickerAdapter(Context context, int max, boolean camera) {
         mInflater = LayoutInflater.from(context);
         mPaths = new ArrayList<>();
         mSelected = new ArrayList<>();
         mMax = max;
+        mCamera = camera;
     }
 
     public void setPaths(ArrayList<String> paths) {
@@ -51,13 +56,32 @@ public class PhotoPickerAdapter extends RecyclerView.Adapter {
 
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        switch (viewType) {
+            case ITEM_CAMERA:
+                return new CameraHolder(mInflater.inflate(R.layout.picker_item_camera, null));
+        }
         return new PhotoHolder(mInflater.inflate(R.layout.picker_item_photo, null));
     }
 
     @Override
     public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
-        PhotoHolder photoHolder = (PhotoHolder) holder;
-        photoHolder.setPhoto(position, mPaths.get(position));
+        int type = getItemViewType(position);
+        switch (type) {
+            case ITEM_CAMERA:
+                break;
+            case ITEM_PHOTO:
+                PhotoHolder photoHolder = (PhotoHolder) holder;
+                photoHolder.setPhoto(position, mPaths.get(mCamera ? position - 1 : position));
+                break;
+        }
+    }
+
+    @Override
+    public int getItemViewType(int position) {
+        if (position == 0 && mCamera) {
+            return ITEM_CAMERA;
+        }
+        return ITEM_PHOTO;
     }
 
     @Override
@@ -119,7 +143,23 @@ public class PhotoPickerAdapter extends RecyclerView.Adapter {
         }
     }
 
+    public class CameraHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
+
+        public CameraHolder(View itemView) {
+            super(itemView);
+            itemView.setOnClickListener(this);
+        }
+
+        @Override
+        public void onClick(View v) {
+            if (mOnSelectPhotoListener != null) {
+                mOnSelectPhotoListener.onClickCamera();
+            }
+        }
+    }
+
     public interface OnSelectPhotoListener {
         void onPickNumber(int number, int max);
+        void onClickCamera();
     }
 }

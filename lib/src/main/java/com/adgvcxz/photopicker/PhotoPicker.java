@@ -51,7 +51,7 @@ public class PhotoPicker {
                 if (mCrop) {
                     goToCrop();
                 } else {
-                    if (mOnPickMultiPhotoListener != null) {
+                    if (mOnPickPhotoListener != null) {
                         mOnPickPhotoListener.onPickPhoto(mPhotoFile);
                     }
                 }
@@ -63,13 +63,13 @@ public class PhotoPicker {
                         mPhotoFile = new File(path);
                         goToCrop();
                     } else {
-                        if (mOnPickMultiPhotoListener != null) {
+                        if (mOnPickPhotoListener != null) {
                             mOnPickPhotoListener.onPickPhoto(new File(path));
                         }
                     }
                 }
             } else if (requestCode == mCropRequestCode) {
-                if (mOnPickMultiPhotoListener != null) {
+                if (mOnPickPhotoListener != null) {
                     mOnPickPhotoListener.onPickPhoto(mCropFile);
                 }
             } else if (requestCode == mMultiRequestCode) {
@@ -171,6 +171,11 @@ public class PhotoPicker {
             return this;
         }
 
+        public Builder multiCameraFile(File file) {
+            photoPicker.mPhotoFile = file;
+            return this;
+        }
+
         public PhotoPicker goToCamera(Activity activity, OnPickPhotoListener listener) {
             if (photoPicker.mPhotoFile != null || (photoPicker.mCrop && photoPicker.mCropFile != null
                     && !TextUtils.isEmpty(photoPicker.mCropFile.getAbsolutePath()))) {
@@ -199,6 +204,7 @@ public class PhotoPicker {
             photoPicker.mOnPickMultiPhotoListener = listener;
             Intent intent = new Intent(activity, PhotoPickerActivity.class);
             intent.putExtra(PhotoPickerActivity.MAX, photoPicker.mMaxPhoto);
+            intent.putExtra(PhotoPickerActivity.CAMERA, photoPicker.mPhotoFile == null ? "" : photoPicker.mPhotoFile.getAbsolutePath());
             activity.startActivityForResult(intent, photoPicker.mMultiRequestCode);
             return photoPicker;
         }

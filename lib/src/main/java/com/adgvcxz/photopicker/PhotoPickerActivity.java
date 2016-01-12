@@ -2,16 +2,20 @@ package com.adgvcxz.photopicker;
 
 import android.content.Intent;
 import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
 
 import com.adgvcxz.photopicker.views.PhotoPickerAdapter;
 
+import java.io.File;
 import java.util.ArrayList;
 
 import static android.provider.MediaStore.Images.Media;
@@ -24,11 +28,13 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
 
     public static final String MAX = "MAX";
     public static final String PATHS = "PATHS";
+    public static final String CAMERA = "CAMERA";
 
     private ArrayList<String> mPaths;
     private RecyclerView mPhotoRecyclerView;
     private PhotoPickerAdapter mPhotoPickerAdapter;
     private MenuItem mMenuItem;
+    private File mPhotoFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -38,7 +44,12 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
         mPhotoRecyclerView = (RecyclerView) findViewById(R.id.ac_photo_picker_recycler_view);
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mPaths = new ArrayList<>();
-        mPhotoPickerAdapter = new PhotoPickerAdapter(this, getIntent().getIntExtra(MAX, 0));
+        Intent intent = getIntent();
+        String path = intent.getStringExtra(CAMERA);
+        if (!TextUtils.isEmpty(path)) {
+            mPhotoFile = new File(path);
+        }
+        mPhotoPickerAdapter = new PhotoPickerAdapter(this, intent.getIntExtra(MAX, 0), !TextUtils.isEmpty(path));
         loadPhotos();
         mPhotoRecyclerView.setAdapter(mPhotoPickerAdapter);
         mPhotoPickerAdapter.setPaths(mPaths);
@@ -83,5 +94,25 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
             mMenuItem.setTitle(String.format(getString(R.string.picker_menu_done), number));
         }
 
+    }
+
+    @Override
+    public void onClickCamera() {
+        Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+        intent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(mPhotoFile));
+        intent.putExtra(MediaStore.Images.Media.ORIENTATION, 0);
+        startActivityForResult(intent, PhotoPicker.DEFAULT_CAMERA);
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == PhotoPicker.DEFAULT_CAMERA && resultCode == RESULT_OK) {
+            ArrayList<String> paths = new ArrayList<>();
+            paths.add(mPhotoFile.getAbsolutePath());
+            Intent intent = new Intent();
+            intent.putStringArrayListExtra(PATHS, paths);
+            setResult(RESULT_OK, intent);
+            finish();
+        }
     }
 }
