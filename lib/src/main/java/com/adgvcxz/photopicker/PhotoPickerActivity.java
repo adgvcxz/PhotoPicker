@@ -12,7 +12,9 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.TextView;
 
+import com.adgvcxz.photopicker.util.PhotoDir;
 import com.adgvcxz.photopicker.views.PhotoPickerAdapter;
 
 import java.io.File;
@@ -30,20 +32,22 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
     public static final String PATHS = "PATHS";
     public static final String CAMERA = "CAMERA";
 
-    private ArrayList<String> mPaths;
+    private ArrayList<PhotoDir> mPhotoDirs;
     private RecyclerView mPhotoRecyclerView;
     private PhotoPickerAdapter mPhotoPickerAdapter;
     private MenuItem mMenuItem;
     private File mPhotoFile;
+    private TextView mPhotoDir;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.picker_ac_photo_picker);
-        setSupportActionBar((Toolbar) findViewById(R.id.ac_photo_picker_toolbar));
-        mPhotoRecyclerView = (RecyclerView) findViewById(R.id.ac_photo_picker_recycler_view);
+        setSupportActionBar((Toolbar) findViewById(R.id.picker_ac_photo_picker_toolbar));
+        mPhotoRecyclerView = (RecyclerView) findViewById(R.id.picker_ac_photo_picker_recycler_view);
+        mPhotoDir = (TextView) findViewById(R.id.picker_ac_photo_picker_photo_dir);
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
-        mPaths = new ArrayList<>();
+        mPhotoDirs = new ArrayList<>();
         Intent intent = getIntent();
         String path = intent.getStringExtra(CAMERA);
         if (!TextUtils.isEmpty(path)) {
@@ -52,7 +56,7 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
         mPhotoPickerAdapter = new PhotoPickerAdapter(this, intent.getIntExtra(MAX, 0), !TextUtils.isEmpty(path));
         loadPhotos();
         mPhotoRecyclerView.setAdapter(mPhotoPickerAdapter);
-        mPhotoPickerAdapter.setPaths(mPaths);
+//        mPhotoPickerAdapter.setPaths(mPaths);
         mPhotoPickerAdapter.setOnSelectPhotoListener(this);
     }
 
@@ -79,8 +83,13 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
         Cursor cursor = getContentResolver().query(Media.EXTERNAL_CONTENT_URI, projection, null, null
                 , Media.DATE_ADDED + " DESC");
         if (cursor != null) {
+            ArrayList<String> paths = new ArrayList<>();
             while (cursor.moveToNext()) {
-                mPaths.add(cursor.getString(0));
+                //TODO
+                String path = cursor.getString(0);
+                String id = cursor.getString(1);
+                String name = cursor.getString(2);
+                paths.add(cursor.getString(0));
             }
             cursor.close();
         }
