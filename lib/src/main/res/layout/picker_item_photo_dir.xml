@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <com.adgvcxz.photopicker.views.InterceptLinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center_vertical"
+        android:orientation="horizontal"
+        android:padding="16dp">
+
+        <com.facebook.drawee.view.SimpleDraweeView
+            android:id="@+id/picker_item_photo_dir_cover"
+            android:layout_width="@dimen/picker_photo_dir_width"
+            android:layout_height="@dimen/picker_photo_dir_width"
+            app:actualImageScaleType="focusCrop"
+            app:placeholderImage="@mipmap/picker_photo_default"
+            app:placeholderImageScaleType="focusCrop" />
+
+        <TextView
+            android:id="@+id/picker_item_photo_dir_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="16dp"
+            android:layout_weight="1"
+            android:textSize="18dp" />
+
+        <android.support.v7.widget.AppCompatCheckBox
+            android:id="@+id/picker_item_photo_dir_check"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="16dp"
+            android:visibility="gone" />
+    </com.adgvcxz.photopicker.views.InterceptLinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="1dp"
+        android:layout_marginLeft="8dp"
+        android:layout_marginRight="8dp"
+        android:background="#d9d9d9" />
+</LinearLayout>

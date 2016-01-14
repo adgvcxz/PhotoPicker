@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="picker_bottom_tab_color">#cc3F51B5</color>
+    <color name="picker_bottom_tab_color">#EE3F51B5</color>
+    <color name="picker_photo_dir_bg">#BB000000</color>
+    <color name="picker_photo_dir_color">#FFFFFF</color>
 </resources>

@@ -28,6 +28,26 @@
 
             <RelativeLayout
                 android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_above="@+id/picker_ac_photo_picker_bottom">
+
+                <View
+                    android:id="@+id/picker_ac_photo_dir_bg"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/picker_photo_dir_bg" />
+
+                <android.support.v7.widget.RecyclerView
+                    android:id="@+id/picker_ac_photo_dirs"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="56dp"
+                    android:background="@android:color/white" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/picker_ac_photo_picker_bottom"
+                android:layout_width="match_parent"
                 android:layout_height="48dp"
                 android:layout_alignParentBottom="true"
                 android:background="@color/picker_bottom_tab_color">
@@ -37,7 +57,9 @@
                     android:layout_width="wrap_content"
                     android:layout_height="match_parent"
                     android:background="?attr/selectableItemBackground"
+                    android:gravity="center_vertical"
                     android:minWidth="72dp"
+                    android:textColor="@color/picker_photo_dir_color"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
                     android:textSize="16sp" />
