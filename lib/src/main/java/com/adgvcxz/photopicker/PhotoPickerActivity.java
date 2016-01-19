@@ -14,8 +14,11 @@ import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.widget.TextView;
 
 import com.adgvcxz.photopicker.util.PhotoDir;
@@ -36,7 +39,8 @@ import static android.provider.MediaStore.Images.Media;
  * zhaowei
  * Created by zhaowei on 16/1/6.
  */
-public class PhotoPickerActivity extends AppCompatActivity implements PhotoPickerAdapter.OnSelectPhotoListener {
+public class PhotoPickerActivity extends AppCompatActivity implements
+        PhotoPickerAdapter.OnSelectPhotoListener, View.OnClickListener, Animation.AnimationListener, View.OnTouchListener {
 
     public static final String MAX = "MAX";
     public static final String PATHS = "PATHS";
@@ -44,10 +48,18 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
 
     private ArrayList<PhotoDir> mPhotoDirs;
     private RecyclerView mPhotoRecyclerView;
+    private RecyclerView mDirRecyclerView;
+    private View mBg;
     private PhotoPickerAdapter mPhotoPickerAdapter;
     private MenuItem mMenuItem;
     private File mPhotoFile;
     private TextView mPhotoDir;
+    private int mIndex;
+    private Animation mShowRecyclerAnim;
+    private Animation mHideRecyclerAnim;
+    private Animation mShowBgAnim;
+    private Animation mHideBgAnim;
+    private boolean mIsAnim;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,6 +68,8 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
         setSupportActionBar((Toolbar) findViewById(R.id.picker_ac_photo_picker_toolbar));
         mPhotoRecyclerView = (RecyclerView) findViewById(R.id.picker_ac_photo_picker_recycler_view);
         mPhotoDir = (TextView) findViewById(R.id.picker_ac_photo_picker_photo_dir);
+        mBg = findViewById(R.id.picker_ac_photo_dir_bg);
+        mPhotoDir.setOnClickListener(this);
         mPhotoRecyclerView.setLayoutManager(new GridLayoutManager(this, 3));
         mPhotoDirs = new ArrayList<>();
         Intent intent = getIntent();
@@ -66,12 +80,21 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
         mPhotoPickerAdapter = new PhotoPickerAdapter(this, intent.getIntExtra(MAX, 0), !TextUtils.isEmpty(path));
         loadPhotos();
         mPhotoRecyclerView.setAdapter(mPhotoPickerAdapter);
-        mPhotoPickerAdapter.setPaths(mPhotoDirs.get(0).getPhotos());
+        mIndex = 0;
+        mPhotoPickerAdapter.setPaths(mPhotoDirs.get(mIndex).getPhotos());
         mPhotoPickerAdapter.setOnSelectPhotoListener(this);
-        mPhotoDir.setText(mPhotoDirs.get(0).getName());
-        RecyclerView dirRecyclerView = (RecyclerView) findViewById(R.id.picker_ac_photo_dirs);
-        dirRecyclerView.setLayoutManager(new LinearLayoutManager(this));
-        dirRecyclerView.setAdapter(new PhotoDirAdapter());
+        mPhotoDir.setText(mPhotoDirs.get(mIndex).getName());
+        mDirRecyclerView = (RecyclerView) findViewById(R.id.picker_ac_photo_dirs);
+        mDirRecyclerView.setLayoutManager(new LinearLayoutManager(this));
+        mDirRecyclerView.setAdapter(new PhotoDirAdapter());
+        mShowRecyclerAnim = AnimationUtils.loadAnimation(this, R.anim.picker_show_directory_recycler_anim);
+        mHideRecyclerAnim = AnimationUtils.loadAnimation(this, R.anim.picker_hide_directory_recycler_anim);
+        mShowBgAnim = AnimationUtils.loadAnimation(this, R.anim.picker_show_directory_bg_anim);
+        mHideBgAnim = AnimationUtils.loadAnimation(this, R.anim.picker_hide_directory_bg_anim);
+        mHideBgAnim.setAnimationListener(this);
+        mShowBgAnim.setAnimationListener(this);
+        mIsAnim = false;
+        mBg.setOnTouchListener(this);
     }
 
     @Override
@@ -151,6 +174,48 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
         }
     }
 
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.picker_ac_photo_picker_photo_dir) {
+            if (!mIsAnim) {
+                if (mBg.isShown()) {
+                    hideDirectory();
+                } else {
+                    showDirectory();
+                }
+            }
+        }
+    }
+
+    @Override
+    public void onAnimationStart(Animation animation) {
+        mIsAnim = true;
+    }
+
+    @Override
+    public void onAnimationEnd(Animation animation) {
+        if (animation.equals(mHideBgAnim)) {
+            mBg.setVisibility(View.GONE);
+            mDirRecyclerView.setVisibility(View.GONE);
+        }
+        mIsAnim = false;
+    }
+
+    @Override
+    public void onAnimationRepeat(Animation animation) {
+
+    }
+
+    @Override
+    public boolean onTouch(View v, MotionEvent event) {
+        if (event.getAction() == MotionEvent.ACTION_DOWN) {
+            if (!mIsAnim) {
+                hideDirectory();
+            }
+        }
+        return true;
+    }
+
     class PhotoDirAdapter extends RecyclerView.Adapter {
 
         @Override
@@ -161,7 +226,7 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
         @Override
         public void onBindViewHolder(RecyclerView.ViewHolder holder, int position) {
             DirHolder dirHolder = (DirHolder) holder;
-            dirHolder.setPhotoDir(mPhotoDirs.get(position));
+            dirHolder.setPhotoDir(position);
         }
 
         @Override
@@ -185,8 +250,8 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
             itemView.setOnClickListener(this);
         }
 
-        public void setPhotoDir(PhotoDir photoDir) {
-            this.photoDir = photoDir;
+        public void setPhotoDir(int position) {
+            this.photoDir = mPhotoDirs.get(position);
             ImageRequest request = ImageRequestBuilder.newBuilderWithSource(Uri.fromFile(new File(photoDir.getCover())))
                     .setResizeOptions(new ResizeOptions(192, 192))
                     .build();
@@ -196,11 +261,23 @@ public class PhotoPickerActivity extends AppCompatActivity implements PhotoPicke
                     .build();
             cover.setController(controller);
             name.setText(photoDir.getName());
+            checkBox.setChecked(mIndex == position);
         }
 
         @Override
         public void onClick(View v) {
-
         }
+    }
+
+    private void showDirectory() {
+        mDirRecyclerView.setVisibility(View.VISIBLE);
+        mBg.setVisibility(View.VISIBLE);
+        mDirRecyclerView.startAnimation(mShowRecyclerAnim);
+        mBg.startAnimation(mShowBgAnim);
+    }
+
+    private void hideDirectory() {
+        mDirRecyclerView.startAnimation(mHideRecyclerAnim);
+        mBg.startAnimation(mHideBgAnim);
     }
 }

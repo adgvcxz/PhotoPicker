@@ -35,14 +35,16 @@
                     android:id="@+id/picker_ac_photo_dir_bg"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/picker_photo_dir_bg" />
+                    android:background="@color/picker_photo_dir_bg"
+                    android:visibility="gone" />
 
                 <android.support.v7.widget.RecyclerView
                     android:id="@+id/picker_ac_photo_dirs"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
                     android:layout_marginTop="56dp"
-                    android:background="@android:color/white" />
+                    android:background="@android:color/white"
+                    android:visibility="gone" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -59,9 +61,9 @@
                     android:background="?attr/selectableItemBackground"
                     android:gravity="center_vertical"
                     android:minWidth="72dp"
-                    android:textColor="@color/picker_photo_dir_color"
                     android:paddingLeft="16dp"
                     android:paddingRight="16dp"
+                    android:textColor="@color/picker_photo_dir_color"
                     android:textSize="16sp" />
             </RelativeLayout>
         </RelativeLayout>
